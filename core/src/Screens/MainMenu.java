@@ -24,13 +24,13 @@ public class MainMenu implements Screen {
         gameCam = new OrthographicCamera();
         gamePort = new FitViewport(game.G_WIDTH, game.G_HEIGHT, gameCam);
         gameCam.position.set(gamePort.getWorldWidth()/2, gamePort.getWorldHeight()/2, 0);
-        background = new Texture("Background.png");
-        topLeaf = new Texture("Top-Leaf.png");
-        topLeafClicked = new Texture("Top-Leaf-clicked.png");
-        midLeaf = new Texture("Mid-Leaf.png");
-        midLeafClicked = new Texture("Mid-Leaf-clicked.png");
-        botLeaf = new Texture("Bot-Leaf.png");
-        botLeafClicked = new Texture("Bot-Leaf-clicked.png");
+        background = new Texture("Main Menu/Background.png");
+        topLeaf = new Texture("Main Menu/Top-Leaf.png");
+        topLeafClicked = new Texture("Main Menu/Top-Leaf-clicked.png");
+        midLeaf = new Texture("Main Menu/Mid-Leaf.png");
+        midLeafClicked = new Texture("Main Menu/Mid-Leaf-clicked.png");
+        botLeaf = new Texture("Main Menu/Bot-Leaf.png");
+        botLeafClicked = new Texture("Main Menu/Bot-Leaf-clicked.png");
     }
     @Override
     public void show() {
