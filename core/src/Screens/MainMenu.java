@@ -29,7 +29,7 @@ public class MainMenu implements Screen {
         gameCam = new OrthographicCamera();
         gamePort = new FitViewport(game.G_WIDTH, game.G_HEIGHT, gameCam);
         gameCam.position.set(gamePort.getWorldWidth()/2, gamePort.getWorldHeight()/2, 0);
-        FreeTypeFontGenerator generator = new FreeTypeFontGenerator(Gdx.files.internal("Misc/8-BIT WONDER.ttf"));
+        FreeTypeFontGenerator generator = new FreeTypeFontGenerator(Gdx.files.internal("Misc/8-BIT WONDER.TTF"));
         FreeTypeFontGenerator.FreeTypeFontParameter parameter = new FreeTypeFontGenerator.FreeTypeFontParameter();
         parameter.size = (int) Math.ceil(Gdx.graphics.getWidth() / 72.0);
         //parameter.minFilter = Texture.TextureFilter.MipMapLinearNearest;
