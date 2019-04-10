@@ -31,12 +31,12 @@ public class MainMenu implements Screen {
         gameCam.position.set(gamePort.getWorldWidth()/2, gamePort.getWorldHeight()/2, 0);
         FreeTypeFontGenerator generator = new FreeTypeFontGenerator(Gdx.files.internal("Misc/8-BIT WONDER.ttf"));
         FreeTypeFontGenerator.FreeTypeFontParameter parameter = new FreeTypeFontGenerator.FreeTypeFontParameter();
-        parameter.size = (int) Math.ceil( Gdx.graphics.getWidth() / 72); ;
+        parameter.size = (int) Math.ceil(Gdx.graphics.getWidth() / 72.0);
         //parameter.minFilter = Texture.TextureFilter.MipMapLinearNearest;
        // parameter.magFilter = Texture.TextureFilter.Linear;
         parameter.color = Color.BLUE;
         font = generator.generateFont(parameter);
-        parameter.size = (int) Math.ceil( Gdx.graphics.getWidth() / 99);
+        parameter.size = (int) Math.ceil(Gdx.graphics.getWidth() / 99.0);
         fontsmall = generator.generateFont(parameter);
         generator.dispose();
         background = new Texture("Main Menu/Background.png");
@@ -93,7 +93,7 @@ public class MainMenu implements Screen {
         else {
             game.batch.draw(topLeaf, 0, 0);
         }
-        font.draw(game.batch, "Exit", 145,135);
+        fontsmall.draw(game.batch, "Exit", 155,130);
         fontsmall.draw(game.batch, "Credits", 230, 80);
         font.draw(game.batch,"Play", 35, 180);
         game.batch.end();
