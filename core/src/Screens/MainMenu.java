@@ -4,9 +4,12 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.graphics.Camera;
+import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.graphics.g2d.BitmapFont;
+import com.badlogic.gdx.graphics.g2d.freetype.FreeTypeFontGenerator;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.utils.viewport.FitViewport;
 import com.badlogic.gdx.utils.viewport.Viewport;
@@ -19,11 +22,23 @@ public class MainMenu implements Screen {
     private Texture background, topLeaf, topLeafClicked, midLeaf, midLeafClicked, botLeaf, botLeafClicked;
     private boolean top = false, mid = false, bot = false;
     private float countert = 0, counterm = 0, counterb = 0;
+    private BitmapFont font, fontsmall;
+
     public MainMenu(Zahrah game){
         this.game = game;
         gameCam = new OrthographicCamera();
         gamePort = new FitViewport(game.G_WIDTH, game.G_HEIGHT, gameCam);
         gameCam.position.set(gamePort.getWorldWidth()/2, gamePort.getWorldHeight()/2, 0);
+        FreeTypeFontGenerator generator = new FreeTypeFontGenerator(Gdx.files.internal("Misc/8-BIT WONDER.ttf"));
+        FreeTypeFontGenerator.FreeTypeFontParameter parameter = new FreeTypeFontGenerator.FreeTypeFontParameter();
+        parameter.size = (int) Math.ceil( Gdx.graphics.getWidth() / 72); ;
+        //parameter.minFilter = Texture.TextureFilter.MipMapLinearNearest;
+       // parameter.magFilter = Texture.TextureFilter.Linear;
+        parameter.color = Color.BLUE;
+        font = generator.generateFont(parameter);
+        parameter.size = (int) Math.ceil( Gdx.graphics.getWidth() / 99);
+        fontsmall = generator.generateFont(parameter);
+        generator.dispose();
         background = new Texture("Main Menu/Background.png");
         topLeaf = new Texture("Main Menu/Top-Leaf.png");
         topLeafClicked = new Texture("Main Menu/Top-Leaf-clicked.png");
@@ -78,6 +93,9 @@ public class MainMenu implements Screen {
         else {
             game.batch.draw(topLeaf, 0, 0);
         }
+        font.draw(game.batch, "Exit", 145,135);
+        fontsmall.draw(game.batch, "Credits", 230, 80);
+        font.draw(game.batch,"Play", 35, 180);
         game.batch.end();
     }
     private void update(float dt){
@@ -88,6 +106,7 @@ public class MainMenu implements Screen {
     public void resize(int i, int i1) {
         gamePort.update(i, i1);
     }
+
     private void handleInput(float dt) {
         if(Gdx.input.isButtonPressed(Input.Buttons.LEFT)){
             Vector3 mouse = gameCam.unproject(new Vector3(Gdx.input.getX(), Gdx.input.getY(), 0));
@@ -95,9 +114,11 @@ public class MainMenu implements Screen {
             System.out.println(Gdx.input.getX() + " " + Gdx.input.getY());
             if(mouse.x > 6 && mouse.x < 120 && mouse.y < 225 && mouse.y > 125){
                 top = true;
+                game.setScreen(new LevelMap(game));
             }
             else if(mouse.x > 120 && mouse.x < 215 && mouse.y < 175 && mouse.y > 80){
                 mid = true;
+                Gdx.app.exit();
             }
             else if(mouse.x > 215 && mouse.x < 330 && mouse.y > 30 && mouse.y < 135) {
                 bot = true;

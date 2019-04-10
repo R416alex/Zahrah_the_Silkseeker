@@ -15,6 +15,7 @@ public class Zahrah extends Game {
 
 	@Override
 	public void render () {
+
 		super.render();
 	}
 	
