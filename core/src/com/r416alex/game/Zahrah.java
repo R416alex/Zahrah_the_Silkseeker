@@ -5,6 +5,7 @@ import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import Screens.MainMenu;
 
 public class Zahrah extends Game {
+	public boolean DEV_MODE = true;
 	public SpriteBatch batch;
 	public int G_WIDTH = 416, G_HEIGHT = 234;
 	@Override
