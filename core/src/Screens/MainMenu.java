@@ -240,7 +240,7 @@ public class MainMenu implements Screen, InputProcessor {
             else if(mouse.x > 215 && mouse.x < 330 && mouse.y > 30 && mouse.y < 135) {
                 click.play();
                 bot = true;
-                credits = true;
+                //credits = true;
             }
             else if(mouse.x > game.G_WIDTH - 50 && mouse.x < game.G_WIDTH && mouse.y < 50 && mouse.y > 0){
                 if(music){
