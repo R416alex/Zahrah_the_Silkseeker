@@ -9,8 +9,8 @@ public class Zahrah extends Game {
 	public boolean DEV_MODE = false;
 	public SpriteBatch batch;
 	public int G_WIDTH = 416, G_HEIGHT = 234;
-	public Player player;
-	public FPSLogger logger;
+	private Player player;
+	private FPSLogger logger;
 	@Override
 	public void create () {
 		batch = new SpriteBatch();

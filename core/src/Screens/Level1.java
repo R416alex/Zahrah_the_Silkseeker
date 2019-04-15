@@ -43,7 +43,7 @@ public class Level1 implements Screen, InputProcessor {
 
     private boolean right, left, up, down;
 
-    public Level1(Zahrah game) {
+    Level1(Zahrah game) {
         right = false;
         left = false;
         up = false;
@@ -59,7 +59,7 @@ public class Level1 implements Screen, InputProcessor {
         gamePort = new FitViewport((game.G_WIDTH), (game.G_HEIGHT), gameCam);
         map = new TmxMapLoader().load("Map/Levels/Level1/Level1.tmx");
         mapRenderer = new OrthogonalTiledMapRenderer(map);
-        gameCam.position.set(game.G_WIDTH/2,game.G_HEIGHT/2,0);
+        gameCam.position.set(game.G_WIDTH/2f,game.G_HEIGHT/2f,0);
         world = new World(new Vector2(0f,-9.8f), true);
 
         MapLayer layer = map.getLayers().get("Collisions");
