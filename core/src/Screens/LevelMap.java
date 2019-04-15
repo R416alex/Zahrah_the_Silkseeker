@@ -21,7 +21,7 @@ public class LevelMap implements Screen, InputProcessor {
     private Viewport gamePort;
     private Texture background, trunks;
     private float progress;
-    private boolean opening, right, left;
+    private boolean opening,closing, right, left;
     private ShapeRenderer shaperenderer;
     private int loc;
     private int[] worlds = {52, 148, 257, 335};
@@ -34,6 +34,7 @@ public class LevelMap implements Screen, InputProcessor {
         left = false;
         progress = 0;
         opening = true;
+        closing = false;
         Gdx.input.setInputProcessor(this);
         shaperenderer = new ShapeRenderer();
         this.game = game;
@@ -74,6 +75,9 @@ public class LevelMap implements Screen, InputProcessor {
         if (opening) {
             OpenScreen(dt);
         }
+        if (closing) {
+            CloseScreen(dt);
+        }
     }
 
     private void update(float dt) {
@@ -109,7 +113,25 @@ public class LevelMap implements Screen, InputProcessor {
         shaperenderer.rect(0, 0, Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
         shaperenderer.end();
         if (opening && progress >= 1.5) {
+            progress = 0;
             opening = false;
+        }
+        Gdx.gl.glDisable(GL20.GL_BLEND);
+    }
+    private void CloseScreen(float dt){
+        progress += dt;
+        if(game.DEV_MODE) {
+            System.out.println(progress);
+        }
+        Gdx.gl.glEnable(GL20.GL_BLEND);
+        Gdx.gl.glBlendFunc(GL20.GL_SRC_ALPHA, GL20.GL_ONE_MINUS_SRC_ALPHA);
+        shaperenderer.begin(ShapeRenderer.ShapeType.Filled);
+        shaperenderer.setColor(new Color(0f, 0f, 0f, 1f * (progress/1.4f)));
+        shaperenderer.rect(0,0,Gdx.graphics.getWidth(),Gdx.graphics.getHeight());
+        shaperenderer.end();
+        if(closing && progress >= 1.5){
+            this.dispose();
+            game.setScreen(new Level1(game));
         }
         Gdx.gl.glDisable(GL20.GL_BLEND);
     }
@@ -151,6 +173,11 @@ public class LevelMap implements Screen, InputProcessor {
         {
             left = true;
             loc -= 1;
+        }
+        if(!right && !left && i == Input.Keys.SPACE){
+            if(loc == 1){
+                closing = true;
+            }
         }
         return false;
     }
