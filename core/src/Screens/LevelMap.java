@@ -13,7 +13,6 @@ import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.utils.viewport.FitViewport;
 import com.badlogic.gdx.utils.viewport.Viewport;
 import com.r416alex.game.Zahrah;
-
 public class LevelMap implements Screen, InputProcessor {
 
     private Zahrah game;

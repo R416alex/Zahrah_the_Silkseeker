@@ -3,13 +3,14 @@ package com.r416alex.game;
 import com.badlogic.gdx.Game;
 import com.badlogic.gdx.graphics.FPSLogger;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+
 import Screens.MainMenu;
 
 public class Zahrah extends Game {
 	public boolean DEV_MODE = false;
 	public SpriteBatch batch;
 	public int G_WIDTH = 416, G_HEIGHT = 234;
-	private Player player;
+	public Player player;
 	private FPSLogger logger;
 	@Override
 	public void create () {
@@ -21,7 +22,9 @@ public class Zahrah extends Game {
 
 	@Override
 	public void render () {
-		logger.log();
+		if(DEV_MODE) {
+			logger.log();
+		}
 		super.render();
 	}
 	
