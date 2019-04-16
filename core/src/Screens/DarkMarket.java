@@ -2,12 +2,11 @@ package Screens;
 
 import com.r416alex.game.Zahrah;
 
+public class DarkMarket extends mapLevel {
 
-public class Level1 extends mapLevel{
 
-
-    public Level1(Zahrah game) {
-        super(game, 1);
+    public DarkMarket(Zahrah game) {
+        super(game, 0);
     }
 
     @Override
