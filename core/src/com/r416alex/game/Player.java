@@ -64,9 +64,9 @@ public class Player implements com.badlogic.gdx.physics.box2d.ContactListener{
         else if(stop){
             desiredVel = vel.x * 0.75f;
         }
-        System.out.println(desiredVel);
+        //System.out.println(desiredVel);
         float velChange = desiredVel - vel.x;
-        System.out.println("Foot" + numFootContacts);
+        //System.out.println("Foot" + numFootContacts);
         float impulse = body.getMass() * velChange;
         body.applyLinearImpulse(new Vector2(impulse, 0), body.getWorldCenter(), true);
     }
@@ -81,7 +81,7 @@ public class Player implements com.badlogic.gdx.physics.box2d.ContactListener{
         Fixture fixtureA = contact.getFixtureA();
         Fixture fixtureB = contact.getFixtureB();
         if(fixtureA.getUserData().equals(3) || fixtureB.getUserData().equals(3) && (!fixtureA.getUserData().equals(1) || !fixtureB.getUserData().equals(1))) {
-            System.out.println("contact");
+            //System.out.println("contact");
             numFootContacts++;
         }
     }

@@ -8,6 +8,7 @@ import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.maps.MapLayer;
 import com.badlogic.gdx.maps.MapObject;
+import com.badlogic.gdx.maps.MapProperties;
 import com.badlogic.gdx.maps.tiled.TiledMap;
 import com.badlogic.gdx.maps.tiled.TiledMapRenderer;
 import com.badlogic.gdx.maps.tiled.TmxMapLoader;
@@ -41,6 +42,7 @@ public abstract class mapLevel implements Screen, InputProcessor {
         private final int ppm = 32;
         private Player player;
         private boolean right, left, stop;
+        private MapProperties prop;
 
         public mapLevel(Zahrah game, int loc){
         this.loc = loc;
@@ -63,6 +65,8 @@ public abstract class mapLevel implements Screen, InputProcessor {
         mapRender = new OrthogonalTiledMapRenderer(map);
         mapRender.setView(gameCam);
         debugRenderer = new Box2DDebugRenderer();
+        prop = map.getProperties();
+
     }
 
 
@@ -126,9 +130,19 @@ public abstract class mapLevel implements Screen, InputProcessor {
         game.batch.begin();
         game.batch.end();
     }
-    public void update1(float dt){
-        world.step(dt,3,3);
-        gameCam.position.set(Physics.toPixels(player.body.getWorldCenter().x) ,Physics.toPixels(player.body.getWorldCenter().y), 0);
+    public void update1(float dt) {
+        world.step(dt, 3, 3);
+        //System.out.println(Physics.toPixels(player.body.getWorldCenter().x));
+        //System.out.println((prop.get("width", Integer.class)));
+        if (Physics.toPixels(player.body.getWorldCenter().x) - ((game.G_WIDTH)/3) <= 0) {
+            gameCam.position.set(game.G_WIDTH / 2, gameCam.position.y, 0);
+        }
+        else if(Physics.toPixels(player.body.getWorldCenter().x) + (2 *game.G_WIDTH/3) >= Physics.toPixels(prop.get("width", Integer.class))){
+            gameCam.position.set(Physics.toPixels(prop.get("width", Integer.class)) - (game.G_WIDTH/2), gameCam.position.y,0);
+        }
+        else{
+            gameCam.position.set(Physics.toPixels(player.body.getWorldCenter().x) + game.G_WIDTH / 6, gameCam.position.y, 0);
+    }
         gameCam.update();
         mapRender.setView(gameCam);
         b2dCam = gameCam.combined.cpy();
