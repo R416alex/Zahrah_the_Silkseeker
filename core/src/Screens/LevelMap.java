@@ -26,7 +26,8 @@ public class LevelMap implements Screen, InputProcessor {
     private int[] worlds = {52, 148, 257, 335};
     private float x;
 
-    LevelMap(Zahrah game, int level) {
+
+    public LevelMap(Zahrah game, int level) {
         loc = level;
         x = worlds[loc];
         right = false;
@@ -42,6 +43,7 @@ public class LevelMap implements Screen, InputProcessor {
         gameCam.position.set(gamePort.getWorldWidth() / 2, gamePort.getWorldHeight() / 2, 0);
         background = new Texture("Map/Background.png");
         trunks = new Texture("Map/Trunks.png");
+        game.transitions.opening = true;
 
     }
 
@@ -62,21 +64,16 @@ public class LevelMap implements Screen, InputProcessor {
 
         shaperenderer.begin(ShapeRenderer.ShapeType.Filled);
         shaperenderer.setColor(Color.ORANGE);
-        shaperenderer.rect(gameCam.project(new Vector3(x,0,0)).x, 75, 32,48);
+        shaperenderer.rect(gameCam.project(new Vector3(x, 0, 0)).x, 75, 32, 48);
         shaperenderer.end();
 
         game.batch.begin();
         game.batch.draw(trunks, 0, 0);
-
         game.batch.end();
+            game.transitions.OpenScreen(dt);
 
+            game.transitions.CloseScreen(dt, loc);
 
-        if (opening) {
-            OpenScreen(dt);
-        }
-        if (closing) {
-            CloseScreen(dt);
-        }
     }
 
     private void update(float dt) {
@@ -100,40 +97,6 @@ public class LevelMap implements Screen, InputProcessor {
         gameCam.update();
     }
 
-    private void OpenScreen(float dt) {
-        progress += dt;
-        if (game.DEV_MODE) {
-            System.out.println(progress);
-        }
-        Gdx.gl.glEnable(GL20.GL_BLEND);
-        Gdx.gl.glBlendFunc(GL20.GL_SRC_ALPHA, GL20.GL_ONE_MINUS_SRC_ALPHA);
-        shaperenderer.begin(ShapeRenderer.ShapeType.Filled);
-        shaperenderer.setColor(new Color(0f, 0f, 0f, 1f * (1 - (progress / 1.4f))));
-        shaperenderer.rect(0, 0, Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
-        shaperenderer.end();
-        if (opening && progress >= 1.5) {
-            progress = 0;
-            opening = false;
-        }
-        Gdx.gl.glDisable(GL20.GL_BLEND);
-    }
-    private void CloseScreen(float dt){
-        progress += dt;
-        if(game.DEV_MODE) {
-            System.out.println(progress);
-        }
-        Gdx.gl.glEnable(GL20.GL_BLEND);
-        Gdx.gl.glBlendFunc(GL20.GL_SRC_ALPHA, GL20.GL_ONE_MINUS_SRC_ALPHA);
-        shaperenderer.begin(ShapeRenderer.ShapeType.Filled);
-        shaperenderer.setColor(new Color(0f, 0f, 0f, 1f * (progress/1.4f)));
-        shaperenderer.rect(0,0,Gdx.graphics.getWidth(),Gdx.graphics.getHeight());
-        shaperenderer.end();
-        if(closing && progress >= 1.5){
-            this.dispose();
-            game.setScreen(new Level1(game));
-        }
-        Gdx.gl.glDisable(GL20.GL_BLEND);
-    }
 
 
     @Override
@@ -158,6 +121,7 @@ public class LevelMap implements Screen, InputProcessor {
 
     @Override
     public void dispose() {
+        System.out.println("DISPOSE");
         background.dispose();
         trunks.dispose();
         shaperenderer.dispose();
@@ -165,17 +129,17 @@ public class LevelMap implements Screen, InputProcessor {
 
     @Override
     public boolean keyDown(int i) {
-        if (i == Input.Keys.D && loc != 3 && !right && !left) {
-            right = true;
-            loc += 1;
-        } else if (i == Input.Keys.A && loc != 0 && !left && !right)
-        {
-            left = true;
-            loc -= 1;
-        }
-        if(!right && !left && i == Input.Keys.SPACE){
-            if(loc == 1){
-                closing = true;
+        if(!game.transitions.opening || !game.transitions.exiting || !game.transitions.transitioning) {
+            if (i == Input.Keys.D && loc != 3 && !right && !left) {
+                right = true;
+                loc += 1;
+            } else if (i == Input.Keys.A && loc != 0 && !left && !right) {
+                left = true;
+                loc -= 1;
+
+            }
+            if (!right && !left && i == Input.Keys.SPACE) {
+                game.transitions.transitioning = true;
             }
         }
         return false;
@@ -183,8 +147,10 @@ public class LevelMap implements Screen, InputProcessor {
 
     @Override
     public boolean keyUp(int i) {
-        if(i == Input.Keys.ESCAPE){
-            Gdx.app.exit();
+        if(!game.transitions.opening || !game.transitions.exiting || !game.transitions.transitioning) {
+            if (i == Input.Keys.ESCAPE) {
+                Gdx.app.exit();
+            }
         }
         return false;
     }

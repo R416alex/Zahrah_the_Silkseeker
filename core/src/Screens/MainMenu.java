@@ -132,9 +132,9 @@ public class MainMenu implements Screen, InputProcessor {
             game.batch.begin();
         }
         game.batch.end();
-        if(transitioning || exiting){
-            CloseScreen(dt);
-        }
+            game.transitions.CloseScreen(dt, 4);
+            game.transitions.OpenScreen(dt);
+
 
 
     }
@@ -146,28 +146,6 @@ public class MainMenu implements Screen, InputProcessor {
         gamePort.update(i, i1);
     }
 
-    private void CloseScreen(float dt){
-        progress += dt;
-        if(game.DEV_MODE) {
-            System.out.println(progress);
-        }
-        Gdx.gl.glEnable(GL20.GL_BLEND);
-        Gdx.gl.glBlendFunc(GL20.GL_SRC_ALPHA, GL20.GL_ONE_MINUS_SRC_ALPHA);
-        shaperenderer.begin(ShapeRenderer.ShapeType.Filled);
-        shaperenderer.setColor(new Color(0f, 0f, 0f, 1f * (progress/1.4f)));
-        shaperenderer.rect(0,0,Gdx.graphics.getWidth(),Gdx.graphics.getHeight());
-        shaperenderer.end();
-        if(exiting && progress >= 1.5){
-            this.dispose();
-            Gdx.app.exit();
-        }
-        else if(transitioning && progress >= 1.5){
-            song.stop();
-            this.dispose();
-            game.setScreen(new LevelMap(game, 0));
-        }
-        Gdx.gl.glDisable(GL20.GL_BLEND);
-    }
 
     @Override
     public void pause() {
@@ -230,12 +208,14 @@ public class MainMenu implements Screen, InputProcessor {
             if(mouse.x > 6 && mouse.x < 120 && mouse.y < 225 && mouse.y > 125){
                 click.play();
                 top = true;
-                transitioning = true;
+                game.transitions.transitioning = true;
+                game.transitions.loc = 4;
             }
             else if(mouse.x > 120 && mouse.x < 215 && mouse.y < 175 && mouse.y > 80){
                 click.play();
                 mid = true;
-                exiting = true;
+                game.transitions.loc = 4;
+                game.transitions.exiting = true;
             }
             else if(mouse.x > 215 && mouse.x < 330 && mouse.y > 30 && mouse.y < 135) {
                 click.play();

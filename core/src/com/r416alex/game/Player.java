@@ -16,10 +16,11 @@ public class Player implements com.badlogic.gdx.physics.box2d.ContactListener{
     private boolean left, right, stop;
     public Body body;
     public int numFootContacts;
-    public ContactListener contactListener;
+    public int previous;
 
 
     Player(){
+        previous = 0;
         numFootContacts = 0;
         left = false;
         right = false;
@@ -37,31 +38,32 @@ public class Player implements com.badlogic.gdx.physics.box2d.ContactListener{
     }
     public void init(Body body){
         this.body = body;
+        numFootContacts = 0;
 
     }
-    public void update(float dt, boolean left,boolean right,boolean stop){
+    public void update(float dt,int dir, boolean left, boolean right, boolean stop){
         if(numFootContacts < 1){
 
         }
         Vector2 vel = body.getLinearVelocity();
         float desiredVel = 0;
 
-        if(left){
-            if((vel.x + 0.25f) < -5.0f) {
+        if(dir == 1 && left){
+            if((vel.x + 0.05f) < -5.0f) {
                 desiredVel = vel.x - 0.25f;
             }
             else{
                 desiredVel = -5.0f;
             }
-        } else if (right) {
-            if((vel.x - 0.25f) > 5.0f) {
+        } else if (dir == 2 && right) {
+            if((vel.x - 0.05f) > 5.0f) {
                 desiredVel = vel.x + 0.25f;
             }
             else{
                 desiredVel = 5.0f;
             }
         }
-        else if(stop){
+        else if(stop && !left && !right){
             desiredVel = vel.x * 0.75f;
         }
         //System.out.println(desiredVel);
@@ -72,7 +74,7 @@ public class Player implements com.badlogic.gdx.physics.box2d.ContactListener{
     }
     public void jump(){
         if(numFootContacts >= 1){
-            body.applyLinearImpulse(new Vector2(0,6.5f),body.getWorldCenter(), true);
+            body.applyLinearImpulse(new Vector2(0,10f),body.getWorldCenter(), true);
         }
 
     }
