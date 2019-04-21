@@ -19,7 +19,7 @@ public class Zahrah extends Game {
 		batch = new SpriteBatch();
 		this.setScreen(new MainMenu(this));
 		logger = new FPSLogger();
-		player = new Player();
+		player = new Player(this);
 		transitions = new Transitions(this);
 	}
 

@@ -6,6 +6,9 @@ import com.badlogic.gdx.InputProcessor;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
+import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.graphics.g2d.Sprite;
+import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.maps.MapLayer;
 import com.badlogic.gdx.maps.MapObject;
 import com.badlogic.gdx.maps.MapProperties;
@@ -44,9 +47,14 @@ public abstract class mapLevel implements Screen, InputProcessor {
     private boolean right, left, stop;
     private MapProperties prop;
     public int dir; // 1 = left 2 = right;
+    public Sprite gloves, pepper, cape;
+    public int buyzone;
+
 
     public mapLevel(Zahrah game, int loc) {
         this.loc = loc;
+        buyzone = 0;
+        game.player.dead = false;
         right = false;
         left = false;
         stop = false;
@@ -73,6 +81,29 @@ public abstract class mapLevel implements Screen, InputProcessor {
         mapRender.setView(gameCam);
         debugRenderer = new Box2DDebugRenderer();
         prop = map.getProperties();
+
+        if(game.player.level1){
+            cape = new Sprite(new Texture("Misc/Cape.png"));
+        }else{
+            cape = new Sprite(new TextureRegion(new Texture("Misc/ItemsDark.png"),32,0,32,32));
+        }
+        if(game.player.level2){
+            gloves = new Sprite(new Texture("Misc/Gloves.png"));
+        }
+        else{
+            gloves = new Sprite(new TextureRegion(new Texture("Misc/ItemsDark.png"),0,0,32,32));
+        }
+        if(game.player.level3){
+            pepper = new Sprite((new Texture("Misc/Pepper.png")));
+        }
+        else{
+            pepper = new Sprite((new TextureRegion((new Texture("Misc/ItemsDark.png")),64,0,32,32)));
+        }
+        cape.setPosition(105,50);
+        pepper.setPosition(345,45);
+        gloves.setPosition(274,46);
+
+
         game.transitions.opening = true;
 
     }
@@ -113,7 +144,7 @@ public abstract class mapLevel implements Screen, InputProcessor {
         bodyDef.position.set(Physics.toUnits(75), Physics.toUnits(220));
         bodyDef.fixedRotation = true;
         PolygonShape pshape = new PolygonShape();
-        pshape.setAsBox(Physics.toUnits(30)/2, Physics.toUnits(30)/2);
+        pshape.setAsBox(Physics.toUnits(12)/2, Physics.toUnits(28)/2);
         fdef.shape = pshape;
         fdef.density = 1.0f;
         fdef.friction = 0f;
@@ -123,7 +154,7 @@ public abstract class mapLevel implements Screen, InputProcessor {
         game.player.body.applyAngularImpulse(0.2f,true);
         Fixture p = game.player.body.createFixture(fdef);
         p.setUserData(1);
-        pshape.setAsBox(0.5f, 0.1f, new Vector2(0,-0.5f), 0);
+        pshape.setAsBox(0.18f, 0.05f, new Vector2(0,-0.5f), 0);
         fdef.isSensor = true;
         Fixture footSensorFixture = game.player.body.createFixture(fdef);
         footSensorFixture.setUserData(3);
@@ -131,7 +162,7 @@ public abstract class mapLevel implements Screen, InputProcessor {
     public void render(float dt) {
         update1(dt);
 
-        Gdx.gl.glClearColor(1, 0, 0, 1);
+        Gdx.gl.glClearColor(0, 0, 0, 0);
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
         mapRender.getBatch().begin();
         if(map.getLayers().get("Background") != null) {
@@ -141,16 +172,35 @@ public abstract class mapLevel implements Screen, InputProcessor {
             mapRender.renderTileLayer((TiledMapTileLayer)map.getLayers().get("Background2"));
         }
         mapRender.getBatch().end();
+        game.batch.begin();
+        if(loc == 0){
+            if(!game.player.cape) {
+                cape.draw(game.batch);
+            }
+            if(!game.player.pepper) {
+                pepper.draw(game.batch);
+            }
+            if(!game.player.gloves) {
+                gloves.draw(game.batch);
+            }
+        }
+        game.batch.end();
         debugRenderer.render(world,b2dCam);
         game.batch.setProjectionMatrix(gameCam.combined);
         game.batch.begin();
+
         game.batch.end();
+        game.player.render(dt);
         mapRender.getBatch().begin();
         if(map.getLayers().get("Foreground") != null) {
             mapRender.renderTileLayer((TiledMapTileLayer)map.getLayers().get("Foreground"));
         }
         mapRender.getBatch().end();
-        game.transitions.CloseScreen(dt, 4);
+        if(game.player.dead){
+            game.transitions.CloseScreen(dt, loc);
+        }else {
+            game.transitions.CloseScreen(dt, 4);
+        }
         game.transitions.OpenScreen(dt);
     }
     public void update1(float dt) {
@@ -201,7 +251,19 @@ public abstract class mapLevel implements Screen, InputProcessor {
                 stop = false;
                 dir = 2;
             } else if (i == Input.Keys.SPACE) {
-                game.player.jump();
+                if(buyzone == 1 && !game.player.cape && game.player.level1) {
+                    game.player.cape = true;
+                    game.player.updateSprite();
+                }else if(buyzone == 2 && !game.player.gloves && game.player.level2){
+                    game.player.gloves = true;
+                    game.player.updateSprite();
+                }else if(buyzone == 3 && !game.player.pepper && game.player.level3){
+                    game.player.pepper = true;
+                    game.player.updateSprite();
+                }
+                else{
+                    game.player.jump();
+                }
             }
         }
         return false;
@@ -218,6 +280,10 @@ public abstract class mapLevel implements Screen, InputProcessor {
                     stop = true;
                 }
                 right = false;
+            }else if(i == Input.Keys.SPACE){
+                if(game.player.flying){
+                    game.player.endFly();
+                }
             }
         }
         return false;

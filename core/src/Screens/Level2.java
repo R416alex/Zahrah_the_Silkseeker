@@ -5,10 +5,13 @@ import com.r416alex.game.Zahrah;
 
 public class Level2 extends mapLevel{
 
+    public Zahrah game;
 
     public Level2(Zahrah game) {
         super(game, 2);
+        this.game = game;
     }
+
 
     @Override
     public void render(float dt) {
@@ -16,6 +19,13 @@ public class Level2 extends mapLevel{
         super.render(dt);
     }
     public void update(float dt) {
+        if(game.player.body.getPosition().x > 87f){
+            game.player.level2 = true;
+            game.transitions.transitioning = true;
+        }
+        if(game.player.body.getPosition().x < 0.5f){
+            game.transitions.transitioning = true;
+        }
 
     }
 

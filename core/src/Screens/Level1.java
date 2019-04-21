@@ -4,10 +4,11 @@ import com.r416alex.game.Zahrah;
 
 
 public class Level1 extends mapLevel{
-
+    public Zahrah game;
 
     public Level1(Zahrah game) {
         super(game, 1);
+        this.game = game;
     }
 
     @Override
@@ -16,7 +17,13 @@ public class Level1 extends mapLevel{
         super.render(dt);
     }
     public void update(float dt) {
-
+        if(game.player.body.getPosition().x > 77f){
+            game.player.level1 = true;
+            game.transitions.transitioning = true;
+        }
+        if(game.player.body.getPosition().x < 0.5f){
+            game.transitions.transitioning = true;
+        }
     }
 
     @Override

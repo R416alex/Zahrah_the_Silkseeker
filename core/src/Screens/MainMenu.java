@@ -26,6 +26,7 @@ public class MainMenu implements Screen, InputProcessor {
     private Viewport gamePort;
     private Texture background, topLeaf, topLeafClicked, midLeaf, midLeafClicked, botLeaf, botLeafClicked, audio, noaudio;
     private boolean top = false, mid = false, bot = false;
+    private boolean moving;
     private float countert = 0, counterm = 0, counterb = 0;
     private BitmapFont font, fontsmall;
     private Music song;
@@ -38,6 +39,7 @@ public class MainMenu implements Screen, InputProcessor {
     public MainMenu(Zahrah game){
         transitioning = false;
         exiting = false;
+        moving = false;
         credits = false;
         progress = 0;
         Gdx.input.setInputProcessor(this);
@@ -76,7 +78,7 @@ public class MainMenu implements Screen, InputProcessor {
     @Override
     public void render(float dt) {
         update(dt);
-        Gdx.gl.glClearColor(1, 0, 0, 1);
+        Gdx.gl.glClearColor(0, 0, 0, 0);
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
         game.batch.setProjectionMatrix(gameCam.combined);
         game.batch.begin();
@@ -139,6 +141,7 @@ public class MainMenu implements Screen, InputProcessor {
 
     }
     private void update(float dt){
+
         gameCam.update();
     }
     @Override

@@ -3,6 +3,8 @@ package Utils;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL20;
+import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.r416alex.game.Zahrah;
 
@@ -16,11 +18,15 @@ public class Transitions {
     private float progress;
     private Zahrah game;
     private ShapeRenderer shaperenderer;
+    private SpriteBatch transbatch;
     public boolean exiting, transitioning, opening;
     public int loc, from;
+    public Texture leaf;
 
     public Transitions(Zahrah game){
         from = 0;
+        transbatch = new SpriteBatch();
+        leaf = new Texture("Misc/Icon.png");
         exiting = false;
         transitioning = false;
         opening = false;
@@ -42,6 +48,11 @@ public class Transitions {
             shaperenderer.setColor(new Color(0f, 0f, 0f, 1f * (progress / 1.4f)));
             shaperenderer.rect(0, 0, Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
             shaperenderer.end();
+            transbatch.setColor(new Color(1f, 1f, 1f, 1f * (progress / 1.4f)));
+            transbatch.begin();
+            transbatch.draw(leaf, (game.G_WIDTH/2) + (leaf.getWidth()/4), (game.G_HEIGHT/2));
+            transbatch.end();
+
             if (exiting && progress >= 1.5) {
                 game.getScreen().dispose();
                 Gdx.app.exit();
@@ -54,12 +65,16 @@ public class Transitions {
 
 
                 } else if (going == 1) {
+                    game.player.dead = false;
                     game.setScreen(new Level1(game));
                 } else if (going == 2) {
+                    game.player.dead = false;
                     game.setScreen(new Level2(game));
                 } else if (going == 3) {
+                    game.player.dead = false;
                     game.setScreen(new Level3(game));
                 } else if (going == 0) {
+                    game.player.dead = false;
                     game.setScreen(new DarkMarket((game)));
                 }
                 if(going != 4) {
@@ -84,6 +99,10 @@ public class Transitions {
             shaperenderer.setColor(new Color(0f, 0f, 0f, 1f * (1 - (progress / 1.4f))));
             shaperenderer.rect(0, 0, Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
             shaperenderer.end();
+            transbatch.setColor(new Color(1f, 1f, 1f, 1f * (1- (progress / 1.4f))));
+            transbatch.begin();
+            transbatch.draw(leaf, (game.G_WIDTH/2) + (leaf.getWidth()/4), (game.G_HEIGHT/2));
+            transbatch.end();
             if (opening && progress >= 1.5) {
                 System.out.println( " " + game.player.previous);
                 Reset();
