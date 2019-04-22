@@ -5,6 +5,7 @@ import com.badlogic.gdx.physics.box2d.ContactImpulse;
 import com.badlogic.gdx.physics.box2d.ContactListener;
 import com.badlogic.gdx.physics.box2d.Fixture;
 import com.badlogic.gdx.physics.box2d.Manifold;
+import com.r416alex.game.Platform;
 import com.r416alex.game.Worm;
 import com.r416alex.game.Zahrah;
 
@@ -17,10 +18,12 @@ public class ContactChecker implements ContactListener {
     public Zahrah game;
     public mapLevel level;
     public List<Worm> worms;
-    public ContactChecker(Zahrah game, mapLevel level, List<Worm> worms){
+    public List<Platform> plats;
+    public ContactChecker(Zahrah game, mapLevel level, List<Worm> worms, List<Platform> plats){
         this.game = game;
         this.level = level;
         this.worms = worms;
+        this.plats = plats;
     }
     @Override
     public void beginContact(Contact contact) {

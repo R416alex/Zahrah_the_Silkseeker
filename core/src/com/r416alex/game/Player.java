@@ -67,9 +67,9 @@ public class Player {
         flying = false;
         stop = false;
         gloves = false;
-        cape = false;
+        cape = true;
         pepper = false;
-        level1 = false;
+        level1 = true;
         level2 = false;
         level3 = false;
         darkMarket = true;

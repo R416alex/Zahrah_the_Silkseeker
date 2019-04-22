@@ -28,6 +28,7 @@ import com.badlogic.gdx.physics.box2d.PolygonShape;
 import com.badlogic.gdx.physics.box2d.World;
 import com.badlogic.gdx.utils.viewport.FitViewport;
 import com.badlogic.gdx.utils.viewport.Viewport;
+import com.r416alex.game.Platform;
 import com.r416alex.game.Player;
 import com.r416alex.game.Spit;
 import com.r416alex.game.Worm;
@@ -57,6 +58,7 @@ public abstract class mapLevel implements Screen, InputProcessor {
     public int buyzone;
     public List<Worm> worms;
     public List<Spit> spits;
+    public List<Platform> plats;
     public ContactChecker contact;
 
 
@@ -68,6 +70,7 @@ public abstract class mapLevel implements Screen, InputProcessor {
         spits = new ArrayList<Spit>();
         game.player.dead = false;
         right = false;
+        plats = new ArrayList<Platform>();
         left = false;
         stop = false;
         System.out.println(loc);
@@ -88,7 +91,7 @@ public abstract class mapLevel implements Screen, InputProcessor {
         world = new World(new Vector2(0f, -20f), true);
 
         loadBodies();
-        contact = new ContactChecker(game, this, worms);
+        contact = new ContactChecker(game, this, worms, plats);
         world.setContactListener(contact);
         mapRender = new OrthogonalTiledMapRenderer(map);
         mapRender.setView(gameCam);
@@ -196,6 +199,46 @@ public abstract class mapLevel implements Screen, InputProcessor {
 
             }
         }
+        if(map.getLayers().get("Platforms") != null) {
+            MapLayer layer = map.getLayers().get("Platforms");
+
+
+            for (int i = 0; i < layer.getObjects().getCount(); i++) {
+
+                MapObject object = layer.getObjects().get(i);
+                bodyDef.type = BodyDef.BodyType.KinematicBody;
+                float x;
+                if(object.getProperties().get("right", Boolean.class)){
+                    x = (object.getProperties().get("width", Float.class) - 32);
+                }else {
+                    x = (object.getProperties().get("x", Float.class));
+                }
+                float y = (object.getProperties().get("y", Float.class));
+
+                Vector2 range = new Vector2(Physics.toUnits(object.getProperties().get("x", Float.class)), Physics.toUnits(object.getProperties().get("y", Float.class)-32));
+
+                float speed = Physics.toUnits(object.getProperties().get("speed", Float.class));
+
+                bodyDef.position.set(Physics.toUnits(x), Physics.toUnits(y));
+                bodyDef.fixedRotation = true;
+                PolygonShape pshape = new PolygonShape();
+                pshape.setAsBox(Physics.toUnits(32)/2, Physics.toUnits(10) / 2);
+                fdef.shape = pshape;
+                fdef.density = 1.0f;
+                fdef.friction = 100000f;
+                fdef.restitution = 0;
+                fdef.isSensor = false;
+
+
+                plats.add(new Platform(game,world.createBody(bodyDef), range, speed, Physics.toUnits(object.getProperties().get("y", Float.class))));
+                Fixture f = plats.get(i).body.createFixture(fdef);
+                f.setUserData(2);
+
+
+
+            }
+        }
+
         fdef.isSensor = false;
         bodyDef.type = BodyDef.BodyType.DynamicBody;
         bodyDef.position.set(Physics.toUnits(75), Physics.toUnits(220));
@@ -204,7 +247,7 @@ public abstract class mapLevel implements Screen, InputProcessor {
         pshape.setAsBox(Physics.toUnits(12)/2, Physics.toUnits(28)/2);
         fdef.shape = pshape;
         fdef.density = 1.0f;
-        fdef.friction = 0f;
+        fdef.friction = 0.001f;
         fdef.restitution = 0.1f;
 
         game.player.init(world.createBody(bodyDef));
@@ -245,6 +288,11 @@ public abstract class mapLevel implements Screen, InputProcessor {
         debugRenderer.render(world,b2dCam);
         game.batch.setProjectionMatrix(gameCam.combined);
 
+        if(plats.size() > 0){
+            for(Platform plat : plats){
+                plat.render(dt);
+            }
+        }
         if(worms.size() > 0){
             for(Worm currentworm : worms){
                 currentworm.render(dt);
