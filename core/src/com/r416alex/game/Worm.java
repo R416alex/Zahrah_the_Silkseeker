@@ -1,9 +1,12 @@
 package com.r416alex.game;
 
+import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Vector2;
+import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.physics.box2d.Body;
 import com.badlogic.gdx.physics.box2d.BodyDef;
 import com.badlogic.gdx.physics.box2d.CircleShape;
@@ -43,9 +46,13 @@ public class Worm{
     public Spit sp;
     public boolean toBeDestroyed, dyingc;
     public mapLevel level;
+
+    public Sound sound, death;
     public Worm(Zahrah game, Body body, int index, World world, mapLevel level){
         this.index = index;
         r = new Random();
+        death = Gdx.audio.newSound(Gdx.files.internal("Music/Worm/Death.wav"));
+        sound = Gdx.audio.newSound(Gdx.files.internal("Music/Worm/Spit.wav"));
         time = 0;
         this.level = level;
         dyingc = false;
@@ -92,7 +99,7 @@ public class Worm{
                     left = true;
                 }
             }
-        if(time > 0.5 && sp == null){
+        if(time > 0.5 && sp == null && !dead){
             if(r.nextFloat() <= 0.25){
                 spit();
             }
@@ -118,6 +125,9 @@ public class Worm{
 
     }
     public void spit(){
+        if(level.gameCam.frustum.pointInFrustum(new Vector3(current.getX(),current.getY(),0)) ) {
+            sound.play();
+        }
         BodyDef b = new BodyDef();
         b.fixedRotation = true;
         b.type = BodyDef.BodyType.DynamicBody;
@@ -149,6 +159,7 @@ public class Worm{
     }
     public void die(){
         dyingc = true;
+        death.play();
         toBeDestroyed = true;
         counter = 0;
         game.player.body.setLinearVelocity(game.player.body.getLinearVelocity().x, 5.5f);

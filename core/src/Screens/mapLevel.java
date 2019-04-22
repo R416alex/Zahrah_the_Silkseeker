@@ -30,12 +30,15 @@ import com.badlogic.gdx.utils.viewport.FitViewport;
 import com.badlogic.gdx.utils.viewport.Viewport;
 import com.r416alex.game.Platform;
 import com.r416alex.game.Player;
+import com.r416alex.game.Scorpion;
 import com.r416alex.game.Spit;
 import com.r416alex.game.Worm;
 import com.r416alex.game.Zahrah;
 
 import java.util.ArrayList;
 import java.util.List;
+
+import javax.xml.crypto.dsig.keyinfo.PGPData;
 
 import Utils.ContactChecker;
 import Utils.Physics;
@@ -45,7 +48,7 @@ public abstract class mapLevel implements Screen, InputProcessor {
     private TiledMap map;
     private OrthogonalTiledMapRenderer mapRender;
     private Zahrah game;
-    private OrthographicCamera gameCam;
+    public OrthographicCamera gameCam;
     private Viewport gamePort;
     private World world;
     private Matrix4 b2dCam;
@@ -59,6 +62,7 @@ public abstract class mapLevel implements Screen, InputProcessor {
     public List<Worm> worms;
     public List<Spit> spits;
     public List<Platform> plats;
+    public List<Scorpion> scorpions;
     public ContactChecker contact;
 
 
@@ -68,6 +72,7 @@ public abstract class mapLevel implements Screen, InputProcessor {
         buyzone = 0;
         worms = new ArrayList<Worm>();
         spits = new ArrayList<Spit>();
+        scorpions = new ArrayList<Scorpion>();
         game.player.dead = false;
         right = false;
         plats = new ArrayList<Platform>();
@@ -80,6 +85,8 @@ public abstract class mapLevel implements Screen, InputProcessor {
             map = new TmxMapLoader().load("Map/Levels/DarkMarket/Darkmarket.tmx");
         } else if(loc == 2){
             map = new TmxMapLoader().load("Map/Levels/Level2/Level2.tmx");
+        } else if(loc == 3){
+            map = new TmxMapLoader().load("Map/Levels/Level3/Level3.tmx");
         }
 
         Gdx.input.setInputProcessor(this);
@@ -91,7 +98,7 @@ public abstract class mapLevel implements Screen, InputProcessor {
         world = new World(new Vector2(0f, -20f), true);
 
         loadBodies();
-        contact = new ContactChecker(game, this, worms, plats);
+        contact = new ContactChecker(game, this, worms, plats, scorpions);
         world.setContactListener(contact);
         mapRender = new OrthogonalTiledMapRenderer(map);
         mapRender.setView(gameCam);
@@ -225,7 +232,7 @@ public abstract class mapLevel implements Screen, InputProcessor {
                 pshape.setAsBox(Physics.toUnits(32)/2, Physics.toUnits(10) / 2);
                 fdef.shape = pshape;
                 fdef.density = 1.0f;
-                fdef.friction = 100000f;
+                fdef.friction = 10000f;
                 fdef.restitution = 0;
                 fdef.isSensor = false;
 
@@ -234,6 +241,52 @@ public abstract class mapLevel implements Screen, InputProcessor {
                 Fixture f = plats.get(i).body.createFixture(fdef);
                 f.setUserData(2);
 
+
+
+            }
+        }
+        if(map.getLayers().get("Scorpion") != null) {
+            MapLayer layer = map.getLayers().get("Scorpion");
+
+
+            for (int i = 0; i < layer.getObjects().getCount(); i++) {
+
+                MapObject object = layer.getObjects().get(i);
+                bodyDef.type = BodyDef.BodyType.KinematicBody;
+
+                float x = (object.getProperties().get("x", Float.class));
+                float y = (object.getProperties().get("y", Float.class));
+
+
+                bodyDef.position.set(Physics.toUnits(x), Physics.toUnits(y));
+                bodyDef.fixedRotation = true;
+                PolygonShape pshape = new PolygonShape();
+                pshape.setAsBox(Physics.toUnits(100f), Physics.toUnits(32.5f) );
+                fdef.shape = pshape;
+                fdef.density = 1.0f;
+                fdef.friction = 0f;
+                fdef.restitution = 0.2f;
+                fdef.isSensor = false;
+                BodyDef b = bodyDef;
+                b.type = BodyDef.BodyType.StaticBody;
+                scorpions.add(new Scorpion(game, world.createBody(bodyDef),world.createBody(b),i, world, this));
+
+                Fixture f = scorpions.get(i).body.createFixture(fdef);
+                f.setUserData("scop"+i);
+                f = scorpions.get(i).body.createFixture(fdef);
+                f.setUserData(2);
+                pshape.setAsBox(Physics.toUnits(50f), Physics.toUnits(24f), new Vector2(1.6f,1.9f),0f);
+                f = scorpions.get(i).body.createFixture(fdef);
+                f.setUserData("scop"+i);
+                f = scorpions.get(i).body.createFixture(fdef);
+                f.setUserData(2);
+                fdef.isSensor = true;
+                pshape.setAsBox(Physics.toUnits(15f),Physics.toUnits(10f),new Vector2(-0.35f,1.6f),0);
+                f = scorpions.get(i).stinger.createFixture(fdef);
+                f.setUserData(-3);
+                pshape.setAsBox(Physics.toUnits(20f), Physics.toUnits(2), new Vector2(-1.65f, 1.1f),0);
+                f = scorpions.get(i).body.createFixture(fdef);
+                f.setUserData("head"+i);
 
 
             }
@@ -247,7 +300,7 @@ public abstract class mapLevel implements Screen, InputProcessor {
         pshape.setAsBox(Physics.toUnits(12)/2, Physics.toUnits(28)/2);
         fdef.shape = pshape;
         fdef.density = 1.0f;
-        fdef.friction = 0.001f;
+        fdef.friction = 0f;
         fdef.restitution = 0.1f;
 
         game.player.init(world.createBody(bodyDef));
@@ -258,6 +311,12 @@ public abstract class mapLevel implements Screen, InputProcessor {
         fdef.isSensor = true;
         Fixture footSensorFixture = game.player.body.createFixture(fdef);
         footSensorFixture.setUserData(3);
+        fdef.isSensor = false;
+        fdef.friction = 0.001f;
+        fdef.density = 0f;
+        pshape.setAsBox(0.14f, 0.05f, new Vector2(0,-0.4f),0);
+        p = game.player.body.createFixture(fdef);
+        p.setUserData(-5);
     }
     public void render(float dt) {
         update1(dt);
@@ -285,7 +344,7 @@ public abstract class mapLevel implements Screen, InputProcessor {
             }
         }
         game.batch.end();
-        debugRenderer.render(world,b2dCam);
+
         game.batch.setProjectionMatrix(gameCam.combined);
 
         if(plats.size() > 0){
@@ -298,6 +357,11 @@ public abstract class mapLevel implements Screen, InputProcessor {
                 currentworm.render(dt);
             }
         }
+        if(scorpions.size() > 0){
+            for(Scorpion scorpion : scorpions){
+                scorpion.render(dt);
+            }
+        }
 
         game.player.render(dt);
         mapRender.getBatch().begin();
@@ -305,6 +369,7 @@ public abstract class mapLevel implements Screen, InputProcessor {
             mapRender.renderTileLayer((TiledMapTileLayer)map.getLayers().get("Foreground"));
         }
         mapRender.getBatch().end();
+        debugRenderer.render(world,b2dCam);
         if(game.player.dead){
             game.transitions.CloseScreen(dt, loc);
         }else {

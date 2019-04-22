@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<map version="1.2" tiledversion="1.2.3" orientation="orthogonal" renderorder="right-down" width="90" height="20" tilewidth="32" tileheight="32" infinite="0" nextlayerid="7" nextobjectid="33">
+<map version="1.2" tiledversion="1.2.3" orientation="orthogonal" renderorder="right-down" width="90" height="20" tilewidth="32" tileheight="32" infinite="0" nextlayerid="8" nextobjectid="34">
  <tileset firstgid="1" source="TileSets/lvl2.tsx"/>
  <layer id="4" name="Background" width="90" height="20">
   <data encoding="csv">
@@ -37,6 +37,11 @@
     <property name="right" type="bool" value="false"/>
     <property name="speed" type="float" value="40"/>
    </properties>
+  </object>
+ </objectgroup>
+ <objectgroup id="7" name="Scorpion">
+  <object id="33" x="176" y="520">
+   <point/>
   </object>
  </objectgroup>
  <objectgroup id="6" name="Collisions" visible="0">

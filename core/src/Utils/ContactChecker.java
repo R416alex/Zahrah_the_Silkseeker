@@ -6,6 +6,7 @@ import com.badlogic.gdx.physics.box2d.ContactListener;
 import com.badlogic.gdx.physics.box2d.Fixture;
 import com.badlogic.gdx.physics.box2d.Manifold;
 import com.r416alex.game.Platform;
+import com.r416alex.game.Scorpion;
 import com.r416alex.game.Worm;
 import com.r416alex.game.Zahrah;
 
@@ -19,11 +20,13 @@ public class ContactChecker implements ContactListener {
     public mapLevel level;
     public List<Worm> worms;
     public List<Platform> plats;
-    public ContactChecker(Zahrah game, mapLevel level, List<Worm> worms, List<Platform> plats){
+    public List<Scorpion> scorpions;
+    public ContactChecker(Zahrah game, mapLevel level, List<Worm> worms, List<Platform> plats, List<Scorpion> scorpions){
         this.game = game;
         this.level = level;
         this.worms = worms;
         this.plats = plats;
+        this.scorpions = scorpions;
     }
     @Override
     public void beginContact(Contact contact) {
@@ -49,17 +52,17 @@ public class ContactChecker implements ContactListener {
             worms.get(Integer.parseInt(fixtureA.getUserData().toString().substring(1))-6).groundLeft = true;
         }else if((fixtureB.getUserData().toString().substring(0,1).equals("l") && fixtureA.getUserData().equals(2))){
             worms.get(Integer.parseInt(fixtureB.getUserData().toString().substring(1))-6).groundLeft = true;
-        }else if(fixtureA.getUserData().equals(3) && fixtureB.getUserData().toString().length() > 4){
+        }else if(fixtureA.getUserData().equals(3) && fixtureB.getUserData().toString().length() > 4 && fixtureB.getUserData().toString().substring(0,4).equals("worm")){
             if(fixtureB.getUserData().toString().substring(0,4).equals("worm")) {
                 worms.get(Integer.parseInt(fixtureB.getUserData().toString().substring(4))-6).die();
             }
         }
-        else if(fixtureB.getUserData().equals(3) && fixtureA.getUserData().toString().length() > 4){
+        else if(fixtureB.getUserData().equals(3) && fixtureA.getUserData().toString().length() > 4 && fixtureA.getUserData().toString().substring(0,4).equals("worm")){
             if(fixtureA.getUserData().toString().substring(0,4).equals("worm")) {
                 worms.get(Integer.parseInt(fixtureA.getUserData().toString().substring(4))-6).die();
             }
         }
-        else if(fixtureB.getUserData().equals(1) && fixtureA.getUserData().toString().length() > 4){
+        else if(fixtureB.getUserData().equals(1) && fixtureA.getUserData().toString().length() > 4 && fixtureA.getUserData().toString().substring(0,4).equals("spit")){
             if(fixtureA.getUserData().toString().substring(0,4).equals("spit")) {
                 if (worms.get(Integer.parseInt(fixtureA.getUserData().toString().substring(4)) - 6).sp != null && !worms.get(Integer.parseInt(fixtureA.getUserData().toString().substring(4)) - 6).sp.toBeDestroyed) {
                     worms.get(Integer.parseInt(fixtureA.getUserData().toString().substring(4)) - 6).sp.toBeDestroyed = true;
@@ -67,7 +70,7 @@ public class ContactChecker implements ContactListener {
                 }
             }
         }
-        else if(fixtureA.getUserData().equals(1) && fixtureB.getUserData().toString().length() > 4){
+        else if(fixtureA.getUserData().equals(1) && fixtureB.getUserData().toString().length() > 4 && fixtureB.getUserData().toString().substring(0,4).equals("spit")){
             if(fixtureB.getUserData().toString().substring(0,4).equals("spit")) {
                 if (worms.get(Integer.parseInt(fixtureB.getUserData().toString().substring(4)) - 6).sp != null && !worms.get(Integer.parseInt(fixtureB.getUserData().toString().substring(4)) - 6).sp.toBeDestroyed) {
                     worms.get(Integer.parseInt(fixtureB.getUserData().toString().substring(4)) - 6).sp.toBeDestroyed = true;
@@ -75,18 +78,28 @@ public class ContactChecker implements ContactListener {
                 }
             }
         }
-        else if(fixtureB.getUserData().equals(2) && fixtureA.getUserData().toString().length() > 4){
+        else if(fixtureB.getUserData().equals(2) && fixtureA.getUserData().toString().length() > 4 && fixtureA.getUserData().toString().substring(0,4).equals("spit")){
             if(fixtureA.getUserData().toString().substring(0,4).equals("spit")) {
                 if (worms.get(Integer.parseInt(fixtureA.getUserData().toString().substring(4)) - 6).sp != null && !worms.get(Integer.parseInt(fixtureA.getUserData().toString().substring(4)) - 6).sp.toBeDestroyed) {
                     worms.get(Integer.parseInt(fixtureA.getUserData().toString().substring(4)) - 6).sp.toBeDestroyed = true;
                 }
             }
         }
-        else if(fixtureA.getUserData().equals(2) && fixtureB.getUserData().toString().length() > 4){
+        else if(fixtureA.getUserData().equals(2) && fixtureB.getUserData().toString().length() > 4 && fixtureB.getUserData().toString().substring(0,4).equals("spit")){
             if(fixtureB.getUserData().toString().substring(0,4).equals("spit")) {
                 if(worms.get(Integer.parseInt(fixtureB.getUserData().toString().substring(4))-6).sp != null && !worms.get(Integer.parseInt(fixtureB.getUserData().toString().substring(4))-6).sp.toBeDestroyed) {
                     worms.get(Integer.parseInt(fixtureB.getUserData().toString().substring(4)) - 6).sp.toBeDestroyed = true;
                 }
+            }
+        }
+        else if(fixtureA.getUserData().equals(3) && fixtureB.getUserData().toString().length() > 4){
+            if(fixtureB.getUserData().toString().substring(0,4).equals("head")) {
+                scorpions.get(Integer.parseInt(fixtureB.getUserData().toString().substring(4))).damage();
+            }
+        }
+        else if(fixtureB.getUserData().equals(3) && fixtureA.getUserData().toString().length() > 4){
+            if(fixtureA.getUserData().toString().substring(0,4).equals("head")) {
+                scorpions.get(Integer.parseInt(fixtureA.getUserData().toString().substring(4))).damage();
             }
         }
 

@@ -43,6 +43,7 @@ public class Player {
     public Random r;
     public int flipper;
     public boolean dead;
+    public boolean grounded;
 
 
     Player(Zahrah game) {
@@ -70,7 +71,7 @@ public class Player {
         cape = true;
         pepper = false;
         level1 = true;
-        level2 = false;
+        level2 = true;
         level3 = false;
         darkMarket = true;
         petals = 0;
@@ -114,6 +115,9 @@ public class Player {
 
     public void update(float dt, int dir, boolean left, boolean right, boolean stop) {
 
+        if(numFootContacts >= 1){
+            grounded = true;
+        }
         this.left = left;
         this.right = right;
         this.stop = stop;
@@ -162,7 +166,7 @@ public class Player {
             if(progress < 2.75 && progress != 0){
                 if(body.getLinearVelocity().y < 1) {
                     body.setTransform(new Vector2(body.getPosition().x + (float) (flipper * (1/9f)* progress * Math.sin(progress*10)), body.getPosition().y),0);
-                    body.applyLinearImpulse(new Vector2(0f,0.4f), body.getWorldCenter(), true);
+                    body.applyLinearImpulse(new Vector2(0f,0.5f), body.getWorldCenter(), true);
                    // body.applyLinearImpulse((float)(flipper *(Math.floor((progress*2))%2-0.5)),0.4f, body.getWorldCenter().x, body.getWorldCenter().y, true);
                 }
                 else{
@@ -201,7 +205,7 @@ public class Player {
             body.applyLinearImpulse(new Vector2(0, 3.25f), body.getWorldCenter(), true);
             jumping = true;
         }
-        if (numFootContacts == 0 && cape) {
+        if (numFootContacts == 0 && cape  && !flying && grounded) {
             flying = true;
             if (r.nextBoolean()) {
                 flipper = 1;
@@ -217,6 +221,7 @@ public class Player {
         body.applyLinearImpulse(x,0, body.getWorldCenter().x, body.getWorldCenter().y, true);
         progress = 0;
         flying = false;
+        grounded = false;
     }
 
 
