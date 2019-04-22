@@ -29,8 +29,14 @@ import com.badlogic.gdx.physics.box2d.World;
 import com.badlogic.gdx.utils.viewport.FitViewport;
 import com.badlogic.gdx.utils.viewport.Viewport;
 import com.r416alex.game.Player;
+import com.r416alex.game.Spit;
+import com.r416alex.game.Worm;
 import com.r416alex.game.Zahrah;
 
+import java.util.ArrayList;
+import java.util.List;
+
+import Utils.ContactChecker;
 import Utils.Physics;
 
 public abstract class mapLevel implements Screen, InputProcessor {
@@ -49,11 +55,17 @@ public abstract class mapLevel implements Screen, InputProcessor {
     public int dir; // 1 = left 2 = right;
     public Sprite gloves, pepper, cape;
     public int buyzone;
+    public List<Worm> worms;
+    public List<Spit> spits;
+    public ContactChecker contact;
 
 
     public mapLevel(Zahrah game, int loc) {
+        this.game = game;
         this.loc = loc;
         buyzone = 0;
+        worms = new ArrayList<Worm>();
+        spits = new ArrayList<Spit>();
         game.player.dead = false;
         right = false;
         left = false;
@@ -66,7 +78,7 @@ public abstract class mapLevel implements Screen, InputProcessor {
         } else if(loc == 2){
             map = new TmxMapLoader().load("Map/Levels/Level2/Level2.tmx");
         }
-        this.game = game;
+
         Gdx.input.setInputProcessor(this);
         gameCam = new OrthographicCamera();
         b2dCam = gameCam.combined.cpy();
@@ -75,8 +87,9 @@ public abstract class mapLevel implements Screen, InputProcessor {
         gameCam.position.set(game.G_WIDTH / 2f, game.G_HEIGHT / 2f, 0);
         world = new World(new Vector2(0f, -20f), true);
 
-
         loadBodies();
+        contact = new ContactChecker(game, this, worms);
+        world.setContactListener(contact);
         mapRender = new OrthogonalTiledMapRenderer(map);
         mapRender.setView(gameCam);
         debugRenderer = new Box2DDebugRenderer();
@@ -138,8 +151,52 @@ public abstract class mapLevel implements Screen, InputProcessor {
                 b.setUserData(2);
 
 
+
             }
         }
+        if(map.getLayers().get("Worms") != null) {
+            MapLayer layer = map.getLayers().get("Worms");
+
+
+            for (int i = 0; i < layer.getObjects().getCount(); i++) {
+
+                MapObject object = layer.getObjects().get(i);
+                bodyDef.type = BodyDef.BodyType.DynamicBody;
+
+                float x = (object.getProperties().get("x", Float.class));
+                float y = (object.getProperties().get("y", Float.class));
+
+                bodyDef.position.set(Physics.toUnits(x + (0.5f * 32f)), Physics.toUnits(y + (0.5f *20f)));
+                bodyDef.fixedRotation = true;
+                PolygonShape pshape = new PolygonShape();
+                pshape.setAsBox(Physics.toUnits(32f) / 2, Physics.toUnits(12f) / 2);
+                fdef.shape = pshape;
+                fdef.isSensor = false;
+                fdef.density = 1.0f;
+                fdef.friction = 0f;
+                fdef.restitution = 0.1f;
+
+                int index = i + 6;
+
+                worms.add(new Worm(game, world.createBody(bodyDef), index, world, this));
+                Fixture b = worms.get(i).body.createFixture(fdef);
+                b.setUserData("worm"+index);
+
+                pshape.setAsBox(0.05f, 0.05f, new Vector2(-0.75f,-0.3f), 0);
+                fdef.isSensor = true;
+                Fixture f = worms.get(i).body.createFixture(fdef);
+                f.setUserData("l"+index);
+
+                pshape.setAsBox(0.05f, 0.05f, new Vector2(0.75f,-0.3f), 0);
+                fdef.isSensor = true;
+                Fixture g = worms.get(i).body.createFixture(fdef);
+                g.setUserData("r"+index);
+
+
+
+            }
+        }
+        fdef.isSensor = false;
         bodyDef.type = BodyDef.BodyType.DynamicBody;
         bodyDef.position.set(Physics.toUnits(75), Physics.toUnits(220));
         bodyDef.fixedRotation = true;
@@ -154,7 +211,7 @@ public abstract class mapLevel implements Screen, InputProcessor {
         game.player.body.applyAngularImpulse(0.2f,true);
         Fixture p = game.player.body.createFixture(fdef);
         p.setUserData(1);
-        pshape.setAsBox(0.18f, 0.05f, new Vector2(0,-0.5f), 0);
+        pshape.setAsBox(0.14f, 0.05f, new Vector2(0,-0.5f), 0);
         fdef.isSensor = true;
         Fixture footSensorFixture = game.player.body.createFixture(fdef);
         footSensorFixture.setUserData(3);
@@ -187,9 +244,13 @@ public abstract class mapLevel implements Screen, InputProcessor {
         game.batch.end();
         debugRenderer.render(world,b2dCam);
         game.batch.setProjectionMatrix(gameCam.combined);
-        game.batch.begin();
 
-        game.batch.end();
+        if(worms.size() > 0){
+            for(Worm currentworm : worms){
+                currentworm.render(dt);
+            }
+        }
+
         game.player.render(dt);
         mapRender.getBatch().begin();
         if(map.getLayers().get("Foreground") != null) {
@@ -234,7 +295,6 @@ public abstract class mapLevel implements Screen, InputProcessor {
     b2dCam = gameCam.combined.cpy();
         b2dCam.scl(ppm);
         game.player.update(dt, dir, left, right, stop);
-        world.setContactListener(game.player);
 
 }
     public boolean keyDown(int i) {

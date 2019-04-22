@@ -19,10 +19,10 @@ import java.util.Random;
 import Utils.Physics;
 
 
-public class Player implements com.badlogic.gdx.physics.box2d.ContactListener {
+public class Player {
     public boolean gloves, cape, pepper, level1, level2, level3, darkMarket;
     private int petals;
-    private boolean left, right, stop, jumping;
+    public boolean left, right, stop, jumping;
             public boolean flying;
     public Body body;
     public int numFootContacts;
@@ -72,7 +72,7 @@ public class Player implements com.badlogic.gdx.physics.box2d.ContactListener {
         level1 = false;
         level2 = false;
         level3 = false;
-        darkMarket = false;
+        darkMarket = true;
         petals = 0;
 
 
@@ -178,7 +178,7 @@ public class Player implements com.badlogic.gdx.physics.box2d.ContactListener {
         }
         x = Physics.toPixels(body.getPosition().x - Physics.toUnits(9));
         y = Physics.toPixels(body.getPosition().y - Physics.toUnits(15));
-        System.out.println(body.getPosition().y);
+        //System.out.println(body.getPosition().y);
         if(body.getPosition().y < 0){
             die();
         }
@@ -219,49 +219,6 @@ public class Player implements com.badlogic.gdx.physics.box2d.ContactListener {
         flying = false;
     }
 
-    @Override
-    public void beginContact(Contact contact) {
-        Fixture fixtureA = contact.getFixtureA();
-        Fixture fixtureB = contact.getFixtureB();
-        if (fixtureA.getUserData().equals(3) || fixtureB.getUserData().equals(3) && (!fixtureA.getUserData().equals(1) || !fixtureB.getUserData().equals(1))) {
-            //System.out.println("contact");
-            numFootContacts++;
-            if(numFootContacts > 0){
-                jumping = false;
-                flying = false;
-                progress = 0;
-            }else{
-                jumping = true;
-            }
-        }
-    }
-
-    @Override
-    public void endContact(Contact contact) {
-        Fixture fixtureA = contact.getFixtureA();
-        Fixture fixtureB = contact.getFixtureB();
-        if ((fixtureA.getUserData().equals(3)
-                || fixtureB.getUserData().equals(3) && (!fixtureA.getUserData().equals(1) || !fixtureB.getUserData().equals(1)))) {
-            numFootContacts--;
-            if(numFootContacts > 0){
-                jumping = false;
-                flying = false;
-                progress = 0;
-            }else{
-                jumping = true;
-            }
-        }
-    }
-
-    @Override
-    public void preSolve(Contact contact, Manifold manifold) {
-
-    }
-
-    @Override
-    public void postSolve(Contact contact, ContactImpulse contactImpulse) {
-
-    }
 
     public void getCurrentSprite(float dt) {
 
