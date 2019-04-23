@@ -170,7 +170,7 @@ public class Worm{
         if(!dead && !dyingc && left) {
             counter = counter + dt;
             if (counter > ((1 / walkfps) * 6)) {
-                counter = counter - ((1 / walkfps) * 8);
+                counter = counter - ((1 / walkfps) * 6);
 
             }
             if (counter < (1 / walkfps) && counter > 0) {
@@ -190,7 +190,7 @@ public class Worm{
         }else if(!dead && !dyingc && !left) {
             counter = counter + dt;
             if (counter > ((1 / walkfps) * 6)) {
-                counter = counter - ((1 / walkfps) * 8);
+                counter = counter - ((1 / walkfps) * 6);
 
             }
             if (counter < (1 / walkfps) && counter > 0) {

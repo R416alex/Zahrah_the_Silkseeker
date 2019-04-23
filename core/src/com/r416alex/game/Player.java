@@ -13,7 +13,11 @@ import com.badlogic.gdx.physics.box2d.ContactImpulse;
 import com.badlogic.gdx.physics.box2d.ContactListener;
 import com.badlogic.gdx.physics.box2d.Fixture;
 import com.badlogic.gdx.physics.box2d.Manifold;
+import com.badlogic.gdx.physics.box2d.World;
 
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
 import java.util.Random;
 
 import Utils.Physics;
@@ -43,10 +47,12 @@ public class Player {
     public Random r;
     public int flipper;
     public boolean dead;
+    public float timesincetornado;
     public boolean grounded;
-
-
+    public boolean tornado;
+    public List<Tornado> tornados;
     Player(Zahrah game) {
+        tornados = new ArrayList<Tornado>();
         flipper = 1;
         r = new Random();
         x = 0;
@@ -62,12 +68,13 @@ public class Player {
         counter = 0;
         previous = 0;
         numFootContacts = 0;
+        timesincetornado = 5f;
         left = false;
         jumping = false;
         right = true;
         flying = false;
         stop = false;
-        gloves = false;
+        gloves = true;
         cape = true;
         pepper = false;
         level1 = true;
@@ -75,7 +82,7 @@ public class Player {
         level3 = false;
         darkMarket = true;
         petals = 0;
-
+        tornado = false;
 
     }
 
@@ -97,6 +104,7 @@ public class Player {
     public void init(Body body) {
         this.body = body;
         numFootContacts = 0;
+        timesincetornado = 5;
 
         if(cape && !gloves){
             walkingSprite = new Texture("Characters/Zahrah/WalkingC.png");
@@ -112,9 +120,27 @@ public class Player {
             jumpingSprite = new Texture("Characters/Zahrah/Jumping.png");
         }
     }
+    public void throwtornado(boolean l){
+        tornado = true;
+        tornados.add(new Tornado(body.getWorld(), game, l));
+    }
 
-    public void update(float dt, int dir, boolean left, boolean right, boolean stop) {
+    public void update(float dt, int dir, boolean left, boolean right, boolean stop, boolean shift) {
 
+        if(tornado == false && tornados.size() > 0){
+            tornados.remove(0);
+        }
+        if(!tornado && gloves){
+            timesincetornado += dt;
+            if(timesincetornado > 5 && shift && tornados.size() == 0){
+                timesincetornado = 0;
+                if(dir == 1) {
+                    throwtornado(true);
+                }else{
+                    throwtornado(false);
+                }
+            }
+        }
         if(numFootContacts >= 1){
             grounded = true;
         }
@@ -196,6 +222,11 @@ public class Player {
         getCurrentSprite(dt);
         game.batch.begin();
         current.draw(game.batch);
+        if(tornados.size() > 0){
+            for(Tornado temp : tornados){
+                temp.render(dt);
+            }
+        }
         game.batch.end();
 
     }

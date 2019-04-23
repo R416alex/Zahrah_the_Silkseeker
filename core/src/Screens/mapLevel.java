@@ -54,7 +54,7 @@ public abstract class mapLevel implements Screen, InputProcessor {
     private Matrix4 b2dCam;
     private Box2DDebugRenderer debugRenderer;
     private final int ppm = 32;
-    private boolean right, left, stop;
+    private boolean right, left, stop,shift;
     private MapProperties prop;
     public int dir; // 1 = left 2 = right;
     public Sprite gloves, pepper, cape;
@@ -78,6 +78,7 @@ public abstract class mapLevel implements Screen, InputProcessor {
         plats = new ArrayList<Platform>();
         left = false;
         stop = false;
+        shift = false;
         System.out.println(loc);
         if (loc == 1) {
             map = new TmxMapLoader().load("Map/Levels/Level1/Level1.tmx");
@@ -407,7 +408,7 @@ public abstract class mapLevel implements Screen, InputProcessor {
         mapRender.setView(gameCam);
     b2dCam = gameCam.combined.cpy();
         b2dCam.scl(ppm);
-        game.player.update(dt, dir, left, right, stop);
+        game.player.update(dt, dir, left, right, stop, shift);
 
 }
     public boolean keyDown(int i) {
@@ -423,7 +424,10 @@ public abstract class mapLevel implements Screen, InputProcessor {
                 right = true;
                 stop = false;
                 dir = 2;
-            } else if (i == Input.Keys.SPACE) {
+            }else if(i == Input.Keys.SHIFT_LEFT){
+                shift = true;
+            }
+            else if (i == Input.Keys.SPACE) {
                 if(buyzone == 1 && !game.player.cape && game.player.level1) {
                     game.player.cape = true;
                     game.player.updateSprite();
@@ -457,6 +461,8 @@ public abstract class mapLevel implements Screen, InputProcessor {
                 if(game.player.flying){
                     game.player.endFly();
                 }
+            }else if(i == Input.Keys.SHIFT_LEFT){
+                shift = false;
             }
         }
         return false;

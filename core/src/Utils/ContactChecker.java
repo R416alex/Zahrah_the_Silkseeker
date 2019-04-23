@@ -101,6 +101,20 @@ public class ContactChecker implements ContactListener {
             if(fixtureA.getUserData().toString().substring(0,4).equals("head")) {
                 scorpions.get(Integer.parseInt(fixtureA.getUserData().toString().substring(4))).damage();
             }
+        }else if(fixtureB.getUserData().equals("t")){
+            if(fixtureA.getUserData().toString().substring(0,4).equals("worm")){
+                worms.get(Integer.parseInt(fixtureA.getUserData().toString().substring(4)) - 6).die();
+            }
+            if(fixtureA.getUserData().toString().substring(0,4).equals("scop")){
+                scorpions.get(Integer.parseInt(fixtureA.getUserData().toString().substring(4))).tobedestroyed = true;
+            }
+        }else if(fixtureA.getUserData().equals("t")) {
+            if(fixtureB.getUserData().toString().substring(0,4).equals("worm")){
+                worms.get(Integer.parseInt(fixtureB.getUserData().toString().substring(4)) - 6).die();
+            }
+            if(fixtureB.getUserData().toString().substring(0,4).equals("scop")){
+                scorpions.get(Integer.parseInt(fixtureB.getUserData().toString().substring(4))).tobedestroyed = true;
+            }
         }
 
     }
