@@ -26,9 +26,11 @@ public class Tornado {
     public final int TextureWIDTH= 27;
     public final int TextureHEIGHT= 26;
     public float counter;
+    public boolean dead;
     public Tornado(World world, Zahrah game, boolean left){
         toBeDestroyed = false;
         time = 0;
+        dead = false;
         counter = 0;
         this.left = left;
         this.world = world;
@@ -39,9 +41,9 @@ public class Tornado {
     public void render(float dt){
         update(dt);
         getcurrentsprite(dt);
-
+        if(!dead) {
             current.draw(game.batch);
-
+        }
 
     }
     public void makeBody(){
@@ -81,10 +83,12 @@ public class Tornado {
         if(toBeDestroyed || time > 2f){
             destroy();
         }
-        if(left){
-            body.setLinearVelocity(-2,0);
-        }else{
-            body.setLinearVelocity(2,0);
+        if(!dead) {
+            if (left) {
+                body.setLinearVelocity(-2, 0);
+            } else {
+                body.setLinearVelocity(2, 0);
+            }
         }
     }
     public void getcurrentsprite(float dt){
@@ -106,11 +110,15 @@ public class Tornado {
         } else if (counter > (5 * (1 / walkfps)) && counter < (6 * (1 / walkfps))) {
             current = new Sprite(new TextureRegion(spritesheet, TextureWIDTH * 5, 0, TextureWIDTH, TextureHEIGHT));
         }
-        current.setPosition(Physics.toPixels(body.getPosition().x- 0.25f)-4, Physics.toPixels(body.getPosition().y)- 2);
-    }
+        if(!dead) {
+            current.setPosition(Physics.toPixels(body.getPosition().x - 0.25f) - 4, Physics.toPixels(body.getPosition().y) - 2);
+        }
+        }
     public void destroy(){
+        dead = true;
         game.player.tornado = false;
         world.destroyBody(body);
+        body = null;
     }
 
 }

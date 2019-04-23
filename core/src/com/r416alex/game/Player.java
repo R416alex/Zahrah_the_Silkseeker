@@ -219,6 +219,9 @@ public class Player {
         dead = true;
     }
     public void render(float dt) {
+        if(tornado == false && tornados.size() > 0){
+            tornados.remove(0);
+        }
         getCurrentSprite(dt);
         game.batch.begin();
         current.draw(game.batch);
